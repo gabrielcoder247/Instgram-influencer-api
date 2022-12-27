@@ -21,7 +21,7 @@ class UserAdmin(BaseUserAdmin):
 
 		fieldsets = (
 			# (None, {'fields': ('password',)}), # This simply shows the hashed password field
-			(_('Personal info'), {'fields': ('username', 'email',)}),
+			(_('Personal info'), {'fields': ('name', 'email',)}),
 			(_('Permissions'), {
 				'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions',)
 			}),
@@ -32,16 +32,16 @@ class UserAdmin(BaseUserAdmin):
 		add_fieldsets = (
 			(None, {
 				'classes': ('wide',),
-				'fields': ('username', 'email', 'password1', 'password2')}
+				'fields': ('name', 'email', 'password1', 'password2')}
 			 ),
 		)
-		list_display = ('id', 'email', 'username', 'is_active', 'is_staff')
+		list_display = ('id', 'email', 'name', 'is_active', 'is_staff')
 		list_display_links = ['email']
 		list_filter = ('is_superuser', 'is_staff', 'is_active', 'groups')
-		search_fields = ('email', 'username')
+		search_fields = ('email', 'name')
 		ordering = ('email',)
 		list_per_page = 10
 		filter_horizontal = ('groups', 'user_permissions',)
 
-admin.site.unregister(User)
+# admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

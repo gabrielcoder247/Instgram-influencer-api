@@ -3,18 +3,17 @@
 # Create your models here.
 
 
-	from django.contrib.auth.models import AbstractUser
-	from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.db import models
 
-	from accounts.managers import UserManager
+from accounts.managers import UserManager
 
 
-	class CustomUser(AbstractUser):
+class CustomUser(AbstractUser):
 		first_name = None
 		last_name = None
 		password2 = None
-        username = models.CharField(max_length=50, unique=True)
-		name = None
+		name = models.CharField(max_length=50, unique=True)
 		email = models.EmailField(max_length=55, unique=True)
 
 		objects = UserManager()
@@ -24,3 +23,4 @@
 
 		def __str__(self):
 			return self.email
+
