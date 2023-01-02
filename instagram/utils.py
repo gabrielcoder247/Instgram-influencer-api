@@ -1,5 +1,5 @@
 
-def get_username(self):
+def get_short_name(self):
 	if isinstance(self, bool):
 		pass
 	# else:

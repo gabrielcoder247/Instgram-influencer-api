@@ -12,8 +12,49 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 
+import os
+from importlib.util import find_spec
+from django.apps import apps
+from django.conf import settings
+from django.core.wsgi import get_wsgi_application
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.wsgi import WSGIMiddleware
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+
+# Export Django settings env variable
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "instagram_Influencer.settings")
+
+apps.populate(settings.INSTALLED_APPS)
+
+from core.api_router import router as api_router
+
+# Get the Django WSGI application we are working with
+application = get_wsgi_application()
+
+# This can be done without the function, but making it functional
+# tidies the entire code and encourages modularity
+
+def get_application() -> FastAPI:
+	# Main Fast API application
+	app = FastAPI(title=settings.instagram_Influencer, openapi_url=f"{settings.API_V1_STR}/openapi.json", debug=settings.DEBUG)
+
+	# Set all CORS enabled origins
+	app.add_middleware(CORSMiddleware, allow_origins = [str(origin) for origin in settings.ALLOWED_HOSTS] or ["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"],)
+
+	# Include all api endpoints
+	app.include_router(api_router, prefix=settings.API_V1_STR)
+
+	# Mounts an independent web URL for Django WSGI application
+	app.mount(f"{settings.WSGI_APPLICATION}", WSGIMiddleware(application))
+
+	return app
+
+app = get_application()
 
 
 # Quick-start development settings - unsuitable for production
@@ -43,7 +84,7 @@ INSTALLED_APPS = [
 ]
 
 
-AUTH_USER_MODEL="accounts.CustomUser"
+# AUTH_USER_MODEL="accounts.User"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -56,6 +97,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'instagram_Influencer.urls'
+
+
+# Login & Logout URLs
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/home/'
+LOGOUT_REDIRECT_URL = '/login/'
 
 TEMPLATES = [
     {
@@ -74,6 +121,12 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'instagram_Influencer.wsgi.application'
+
+
+
+API_V1_STR: str = "/api/fa/v1"
+WSGI_APP_URL: str = "/web"
+PROJECT_NAME  = "src"
 
 
 # Database
